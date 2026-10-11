@@ -29,6 +29,16 @@ export default function App() {
     setMessages({ ...messages, [activeId]: [...messages[activeId], message] });
   }
 
+  // Called by a Message on double-click; adds one heart to that message
+function handleReact(id) {
+  // New array: copy the matching message with hearts + 1, keep the others as they are
+  const updated = messages[activeId].map((m) =>
+    m.id === id ? { ...m, hearts: m.hearts + 1 } : m
+  );
+  // Immutable update, same pattern as handleSend
+  setMessages({ ...messages, [activeId]: updated });
+}
+
   return (
     <div className="app">
       <Sidebar
@@ -39,7 +49,7 @@ export default function App() {
       <main className="main">
         {/* Header shows the channel name and the typing indicator */}
         <ChatHeader channel={channel} isTyping={isTyping} />
-        <MessageList messages={messages[activeId]} />
+        <MessageList messages={messages[activeId]} onReact={handleReact} />
         {/* Composer sends messages and reports focus changes */}
         <Composer onSend={handleSend} onTypingChange={setIsTyping} />
       </main>
