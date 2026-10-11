@@ -5,6 +5,8 @@ import Sidebar from "./components/Sidebar.jsx";
 import ChatHeader from "./components/ChatHeader.jsx";
 import MessageList from "./components/MessageList.jsx";
 import Composer from "./components/Composer.jsx";
+import PinnedBar from "./components/PinnedBar.jsx";
+
 
 // Returns the current time, like "9:05 PM"
 function now() {
@@ -18,9 +20,12 @@ export default function App() {
   const [messages, setMessages] = useState(SEED_MESSAGES);
   // Whether the message box has focus; read by ChatHeader, changed by Composer
   const [isTyping, setIsTyping] = useState(false);
+  const [pinnedId, setPinnedId] = useState(null);
 
   // Full channel object for the selected ID
   const channel = CHANNELS.find((c) => c.id === activeId);
+  const pinned = messages[activeId].find((m) => m.id === pinnedId);
+
 
   // Called by the Composer with the new message text
   function handleSend(text) {
@@ -39,6 +44,11 @@ function handleReact(id) {
   setMessages({ ...messages, [activeId]: updated });
 }
 
+// Pin a message, or unpin it if it is already pinned
+function handlePin(id) {
+  setPinnedId(pinnedId === id ? null : id);
+}
+
   return (
     <div className="app">
       <Sidebar
@@ -49,7 +59,13 @@ function handleReact(id) {
       <main className="main">
         {/* Header shows the channel name and the typing indicator */}
         <ChatHeader channel={channel} isTyping={isTyping} />
-        <MessageList messages={messages[activeId]} onReact={handleReact} />
+        <PinnedBar message={pinned} onUnpin={() => setPinnedId(null)} />
+        <MessageList
+          messages={messages[activeId]}
+          pinnedId={pinnedId}
+          onPin={handlePin}
+          onReact={handleReact}
+        />
         {/* Composer sends messages and reports focus changes */}
         <Composer onSend={handleSend} onTypingChange={setIsTyping} />
       </main>

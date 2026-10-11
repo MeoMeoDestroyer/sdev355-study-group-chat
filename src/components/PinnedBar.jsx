@@ -1,4 +1,6 @@
-export default function PinnedBar({ message }) {
+// Shows the pinned message above the list, with an Unpin button
+export default function PinnedBar({ message, onUnpin }) {
+  // Nothing pinned in this channel: render nothing
   if (!message) {
     return null;
   }
@@ -9,6 +11,7 @@ export default function PinnedBar({ message }) {
       <span className="pinned-text">
         {message.author}: {message.text}
       </span>
+      <button onClick={onUnpin}>Unpin</button>
     </div>
   );
 }
