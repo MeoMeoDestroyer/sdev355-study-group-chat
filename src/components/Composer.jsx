@@ -1,6 +1,8 @@
 import { useState } from "react";
 
-export default function Composer() {
+// onSend comes from App; Composer tells App when a message is sent
+export default function Composer({ onSend }) {
+  // The draft stays here because only the Composer uses it
   const [draft, setDraft] = useState("");
 
   function send() {
@@ -8,24 +10,27 @@ export default function Composer() {
     if (text === "") {
       return;
     }
-    console.log("send:", text);
+    onSend(text); 
     setDraft("");
   }
 
   function handleSubmit(e) {
-    e.preventDefault();
+    // Stop the page reloading
+    e.preventDefault(); 
     send();
   }
 
   function handleKeyDown(e) {
-  if (e.key === "Enter" && !e.shiftKey) {
-    e.preventDefault();
-    send();
+    // Enter sends; Shift+Enter makes a new line
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      send();
+    }
+    // Escape clears the box
+    if (e.key === "Escape") {
+      setDraft("");
+    }
   }
-  if (e.key === "Escape") {
-    setDraft("");
-  }
-}
 
   return (
     <form className="composer" onSubmit={handleSubmit}>
