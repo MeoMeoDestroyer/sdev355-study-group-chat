@@ -6,8 +6,6 @@ import ChatHeader from "./components/ChatHeader.jsx";
 import MessageList from "./components/MessageList.jsx";
 import Composer from "./components/Composer.jsx";
 
-
-
 // Returns the current time, like "9:05 PM"
 function now() {
   return new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
@@ -18,6 +16,8 @@ export default function App() {
   const [activeId, setActiveId] = useState("general");
   // Every channel's messages, read by MessageList and changed by Composer
   const [messages, setMessages] = useState(SEED_MESSAGES);
+  // Whether the message box has focus; read by ChatHeader, changed by Composer
+  const [isTyping, setIsTyping] = useState(false);
 
   // Full channel object for the selected ID
   const channel = CHANNELS.find((c) => c.id === activeId);
@@ -29,7 +29,6 @@ export default function App() {
     setMessages({ ...messages, [activeId]: [...messages[activeId], message] });
   }
 
-
   return (
     <div className="app">
       <Sidebar
@@ -38,10 +37,11 @@ export default function App() {
         onSelectChannel={setActiveId}
       />
       <main className="main">
-        <ChatHeader channel={channel} />
-        
+        {/* Header shows the channel name and the typing indicator */}
+        <ChatHeader channel={channel} isTyping={isTyping} />
         <MessageList messages={messages[activeId]} />
-        <Composer onSend={handleSend} />
+        {/* Composer sends messages and reports focus changes */}
+        <Composer onSend={handleSend} onTypingChange={setIsTyping} />
       </main>
     </div>
   );

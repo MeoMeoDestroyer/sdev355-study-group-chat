@@ -1,7 +1,7 @@
 import { useState } from "react";
 
-// onSend comes from App; Composer tells App when a message is sent
-export default function Composer({ onSend }) {
+// onSend and onTypingChange come from App
+export default function Composer({ onSend, onTypingChange }) {
   // The draft stays here because only the Composer uses it
   const [draft, setDraft] = useState("");
 
@@ -10,13 +10,12 @@ export default function Composer({ onSend }) {
     if (text === "") {
       return;
     }
-    onSend(text); 
-    setDraft("");
+    onSend(text); // Pass the text up to App
+    setDraft(""); // Clear the box
   }
 
   function handleSubmit(e) {
-    // Stop the page reloading
-    e.preventDefault(); 
+    e.preventDefault(); // Stop the page reloading
     send();
   }
 
@@ -40,6 +39,9 @@ export default function Composer({ onSend }) {
         value={draft}
         onChange={(e) => setDraft(e.target.value)}
         onKeyDown={handleKeyDown}
+        // Tell App when the box gains or loses focus
+        onFocus={() => onTypingChange(true)}
+        onBlur={() => onTypingChange(false)}
       />
       <button type="submit">Send</button>
     </form>
